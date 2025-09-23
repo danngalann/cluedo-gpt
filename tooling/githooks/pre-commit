@@ -1,0 +1,97 @@
+#!/bin/sh
+# Pre-commit Git hook to run Black formatter, Ruff linting, Prettier formatting, and ESLint
+
+echo "Running pre-commit checks..."
+
+# Get list of staged Python files
+staged_python_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$')
+
+# Get list of staged frontend files (TypeScript, JavaScript, JSX, TSX)
+staged_frontend_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^apps/cluedogpt_frontend/.*\.(ts|tsx|js|jsx)$')
+
+# Check Python files
+if [ -n "$staged_python_files" ]; then
+    echo "Running black formatter on Python files..."
+    black --line-length 199 $staged_python_files
+    format_exit_code=$?
+
+    if [ $format_exit_code -ne 0 ]; then
+        echo "Python formatting failed! Please fix the issues before committing."
+        exit 1
+    fi
+
+    # Re-stage formatted files
+    git add $staged_python_files
+
+    # Run ruff linter on staged Python files
+    echo "Running ruff linter on Python files..."
+    ruff check --fix $staged_python_files
+    lint_exit_code=$?
+
+    if [ $lint_exit_code -ne 0 ]; then
+        echo "Python linting failed! Please fix the issues before committing."
+        exit 1
+    fi
+
+    # Re-stage files after ruff fixes
+    git add $staged_python_files
+    echo "Python formatting and linting passed."
+else
+    echo "No Python files to check."
+fi
+
+# Check frontend files
+if [ -n "$staged_frontend_files" ]; then
+    echo "Checking frontend files..."
+    
+    # Load nvm and use the correct Node.js version
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    
+    # Change to cluedogpt_frontend directory and use the correct Node.js version
+    cd apps/cluedogpt_frontend
+    nvm use
+    nvm_exit_code=$?
+    
+    if [ $nvm_exit_code -ne 0 ]; then
+        echo "Failed to load the correct Node.js version with nvm."
+        exit 1
+    fi
+    
+    # Return to repository root for file operations
+    cd ../../
+    
+    # Run prettier on staged frontend files
+    echo "Running prettier on frontend files..."
+    npx --prefix apps/cluedogpt_frontend prettier --write $staged_frontend_files
+    prettier_exit_code=$?
+    
+    if [ $prettier_exit_code -ne 0 ]; then
+        echo "Prettier formatting failed! Please fix the issues before committing."
+        exit 1
+    fi
+    
+    # Re-stage formatted files
+    git add $staged_frontend_files
+    
+    # Run eslint on staged frontend files
+    echo "Running eslint on frontend files..."
+    # Convert file paths to be relative to cluedogpt_frontend directory
+    frontend_relative_files=$(echo "$staged_frontend_files" | sed 's|apps/cluedogpt_frontend/||g')
+    cd apps/cluedogpt_frontend
+    npx eslint $frontend_relative_files
+    eslint_exit_code=$?
+    cd ../../
+    
+    if [ $eslint_exit_code -ne 0 ]; then
+        echo "ESLint failed! Please fix the issues before committing."
+        exit 1
+    fi
+    
+    echo "Frontend formatting and linting passed."
+else
+    echo "No frontend files to check."
+fi
+
+echo "All pre-commit checks passed."
+exit 0
