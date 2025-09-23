@@ -1,0 +1,126 @@
+Enum GameStatus {
+  DEFINITION
+  ONGOING
+  COMPLETED
+  EXPIRED
+}
+
+Enum ConversationRole {
+  SYSTEM
+  USER
+  ASSISTANT
+  TOOL
+}
+
+Enum QAStatus {
+  ASKED
+  ANSWERED
+}
+
+Table players {
+  id uuid [pk]
+  name varchar(255) [not null, note: 'indexed']
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table games {
+  id uuid [pk]
+  name varchar(255) [not null, note: 'indexed']
+  owner uuid [not null, ref: > players.id, note: 'foreign key, restrict on delete']
+  created_at timestamp [not null, default: `now()`]
+
+  language varchar(30) [not null, default: 'english']
+  locale varchar(30) [not null, default: 'us']
+  max_questions int [null]
+  max_proposals int [null, default: 3]
+  expiry_date timestamp [not null, note: 'indexed']
+
+  culprit varchar(255) [not null]
+  weapon varchar(255) [not null]
+  motive varchar(255) [not null]
+  story text [not null]
+
+  status GameStatus [not null, default: 'DEFINITION']
+
+  Indexes {
+    (status, expiry_date)
+  }
+}
+
+Table game_players {
+  game_id uuid [ref: > games.id]
+  player_id uuid [ref: > players.id]
+
+  Note: 'Through table for Game <-> Player many-to-many'
+}
+
+Table game_definition_conversations {
+  id uuid [pk]
+  game uuid [unique, not null, ref: > games.id, on delete: cascade]
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table definition_messages {
+  id uuid [pk]
+  conversation_id uuid [not null, ref: > game_definition_conversations.id, on delete: cascade]
+  role ConversationRole [not null]
+  content text [null]
+
+  idx int [not null]
+
+  tool_name varchar(100) [null]
+  tool_args json [null]
+  tool_result json [null]
+  tool_call_id varchar(100) [null]
+  tool_latency_ms int [null]
+  tool_error text [null]
+
+  created_at timestamp [not null, default: `now()`]
+
+  Indexes {
+    (conversation_id, idx) [unique]
+    (conversation_id, idx)
+    (role)
+  }
+}
+
+Table game_questions {
+  id uuid [pk]
+  game_id uuid [not null, ref: > games.id, on delete: cascade, note: 'indexed']
+  player_id uuid [not null, ref: > players.id, on delete: cascade, note: 'indexed']
+
+  question_text text [not null]
+  answer_text text [null]
+
+  status QAStatus [not null, default: 'ASKED']
+  asked_at timestamp [not null, default: `now()`]
+  answered_at timestamp [null]
+
+  Indexes {
+    (game_id, player_id, asked_at)
+    (game_id, asked_at)
+  }
+}
+
+Table proposals {
+  id uuid [pk]
+  game_id uuid [not null, ref: > games.id, on delete: cascade, note: 'indexed']
+  player_id uuid [not null, ref: > players.id, on delete: cascade, note: 'indexed']
+
+  culprit varchar(255) [not null]
+  weapon varchar(255) [not null]
+  motive varchar(255) [not null]
+
+  correct_count int [null]
+  is_culprit_correct boolean [null]
+  is_weapon_correct boolean [null]
+  is_motive_correct boolean [null]
+
+  explanation text [null]
+  created_at timestamp [not null, default: `now()`]
+
+  Indexes {
+    (game_id, player_id, created_at)
+    (player_id, created_at)
+  }
+}
