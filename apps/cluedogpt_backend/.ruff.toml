@@ -1,0 +1,34 @@
+lint.select = ["E", "F", "B", "I", "N", "W", "UP", "S", "BLE", "A", "COM", "C4"]
+lint.ignore = ["UP006", "UP035", "B008"]
+
+# Set max line length
+line-length = 200
+
+# Target Python 3.12
+target-version = "py312"
+
+# Avoid auto-fixing imports in `__init__.py` files.
+[lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+"cluedogpt_backend/models/**/*.py" = ["N815"]  # Allow mixedCase in models folder
+"cluedogpt_backend/api/graphql/**/*.py" = ["N815", "N802", "N803"]  # Allow mixedCase in graphql
+"tests/**/*.py" = ["E", "F", "B", "N", "W", "UP", "S", "BLE", "A", "COM", "C4"]  # Exclude everything except isort ("I")
+
+[lint.isort]
+# Group imports by type and organize within groups.
+known-first-party = ["cluedogpt_backend"]
+force-single-line = false
+lines-after-imports = 2
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[lint.mccabe]
+# Maximum cyclomatic complexity.
+max-complexity = 10
+
+[format]
+# Use double quotes for strings.
+quote-style = "double"
+# Indent with 4 spaces.
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
