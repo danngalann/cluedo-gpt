@@ -1,29 +1,34 @@
-"""
-PostgreSQL database initialization module using Tortoise ORM.
-"""
-
 from tortoise import Tortoise
 
 from cluedogpt_backend.settings import settings
 
 
-async def init_postgres_db():
-    """
-    Initialize the PostgreSQL database connection using Tortoise ORM.
-    This is designed to be called during the FastAPI application startup.
-    """
-    await Tortoise.init(
-        db_url=settings.postgres_dsn,
-        modules={
-            "models": [
-                # List your document models here. For example:
-                # "cluedogpt_backend.models.user.User",
-                # "cluedogpt_backend.models.item.Item",
-            ],
+TORTOISE_ORM = {
+    "connections": {
+        "default": settings.postgres_dsn,
+    },
+    "apps": {
+        "models": {
+            "models": ["cluedogpt_backend.models", "aerich.models"],
+            "default_connection": "default",
         },
-    )
+    },
+    "use_tz": True,
+    "timezone": "UTC",
+}
 
-    # Generate schemas for all models
+
+async def init_db() -> None:
+    """Initialize the Tortoise ORM with the shared models."""
+    await Tortoise.init(config=TORTOISE_ORM)
+
+
+async def generate_schemas() -> None:
+    """Generate database schemas."""
+    await init_db()
     await Tortoise.generate_schemas()
 
-    return Tortoise
+
+async def close_connections() -> None:
+    """Close database connections."""
+    await Tortoise.close_connections()
