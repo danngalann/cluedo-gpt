@@ -49,6 +49,20 @@ class Settings(BaseSettings):
         json_schema_extra={"env_names": ["API_PORT"]},
     )
 
+    # AI Model Settings
+    ai_model_name: str = Field(
+        "deepseek/deepseek-chat-v3.1:free",
+        json_schema_extra={"env_names": ["AI_MODEL_NAME"]},
+    )
+    ai_provider_base_url: str = Field(
+        "https://openrouter.ai/api/v1",
+        json_schema_extra={"env_names": ["AI_PROVIDER_BASE_URL"]},
+    )
+    ai_model_api_key: str = Field(
+        ...,
+        json_schema_extra={"env_names": ["AI_MODEL_API_KEY"]},
+    )
+
     # Documentation Settings
     enable_docs: bool = Field(
         True,
