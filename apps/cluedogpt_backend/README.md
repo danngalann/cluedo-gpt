@@ -1,7 +1,5 @@
 # Cluedogpt Backend
 
-A FastAPI application generated from the company template.
-
 ## Features
 
 - FastAPI application with built-in documentation
