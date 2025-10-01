@@ -1,0 +1,21 @@
+{
+    "folders": [
+      {
+        "name": "Cluedo Backend",
+        "path": "apps/cluedogpt_backend"
+      },
+      {
+        "name": "Cluedo Frontend",
+        "path": "apps/cluedogpt_frontend"
+      }
+    ],
+    "settings": {
+      // Configure source paths for IntelliSense across packages
+      "python.analysis.extraPaths": [
+        "apps/cluedogpt_backend",
+        "apps/cluedogpt_frontend"
+      ],
+      "python.terminal.activateEnvironment": true
+    }
+  }
+  
