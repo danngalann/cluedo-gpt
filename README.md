@@ -1,3 +1,9 @@
+# ⚠️ Under Development
+
+This project is under active development. The backend implementation has barely started, and the frontend currently consists only of a basic Vite template. Expect frequent changes and incomplete features.
+
+## Overview
+
 This repository contains an AI-powered Cluedo-inspired game. In this game, a set of players interact with the AI by asking questions about a crime, and they must deduce the culprit, the weapon and the motive of the crime based on the AI's responses. This differs from the classical Cluedo game by removing the usual cards, introducing a motive, and playing directly against a game master.
 
 A team can be a single individual or a team, and after their solution proposal they will receive a grading of their solution, indicating how many elements they got correct.
