@@ -3,8 +3,8 @@ Settings module for the cluedogpt_backend app.
 Uses pydantic_settings for environment variable management with sensible defaults.
 """
 
-from functools import lru_cache
 import os
+from functools import lru_cache
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -82,6 +82,24 @@ class Settings(BaseSettings):
     file_log_level: str = Field(
         "INFO",
         json_schema_extra={"env_names": ["FILE_LOG_LEVEL"]},
+    )
+
+    # JWT Settings
+    jwt_secret_key: str = Field(
+        ...,
+        json_schema_extra={"env_names": ["JWT_SECRET_KEY"]},
+    )
+    jwt_algorithm: str = Field(
+        "HS256",
+        json_schema_extra={"env_names": ["JWT_ALGORITHM"]},
+    )
+    jwt_access_token_expire_minutes: int = Field(
+        15,
+        json_schema_extra={"env_names": ["JWT_ACCESS_TOKEN_EXPIRE_MINUTES"]},
+    )
+    jwt_refresh_token_expire_days: int = Field(
+        30,
+        json_schema_extra={"env_names": ["JWT_REFRESH_TOKEN_EXPIRE_DAYS"]},
     )
 
     model_config = SettingsConfigDict(env_file=ENV_PATH, case_sensitive=False)
