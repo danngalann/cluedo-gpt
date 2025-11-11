@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
-from ai.agents import run_story_creation_agent
+from ai.agents import run_solution_creation_agent, run_story_creation_agent
 from api.api_contracts.requests.game_init_requests import GameInitIterationRequest
 from app_logging import logger
 from models.postgres_models import Game
@@ -24,3 +24,4 @@ class GameInitService:
             )
 
         await run_story_creation_agent(game, game_iteration.message)
+        await run_solution_creation_agent(game)
