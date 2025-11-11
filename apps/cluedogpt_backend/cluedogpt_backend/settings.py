@@ -3,6 +3,7 @@ Settings module for the cluedogpt_backend app.
 Uses pydantic_settings for environment variable management with sensible defaults.
 """
 
+from functools import lru_cache
 import os
 
 from pydantic import Field
@@ -69,7 +70,23 @@ class Settings(BaseSettings):
         json_schema_extra={"env_names": ["ENABLE_DOCS"]},
     )
 
+    # Logging Settings
+    log_level: str = Field(
+        "INFO",
+        json_schema_extra={"env_names": ["LOG_LEVEL"]},
+    )
+    console_log_level: str = Field(
+        "INFO",
+        json_schema_extra={"env_names": ["CONSOLE_LOG_LEVEL"]},
+    )
+    file_log_level: str = Field(
+        "INFO",
+        json_schema_extra={"env_names": ["FILE_LOG_LEVEL"]},
+    )
+
     model_config = SettingsConfigDict(env_file=ENV_PATH, case_sensitive=False)
 
 
-settings = Settings()
+@lru_cache
+def settings() -> Settings:
+    return Settings()

@@ -4,15 +4,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from cluedogpt_backend.api.routers import items
-from cluedogpt_backend.infrastructure.postgres_db import init_postgres_db
+from cluedogpt_backend.app_logging import initialize_logging_from_settings
+from cluedogpt_backend.infrastructure.postgres_db import init_db
 from cluedogpt_backend.settings import settings
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    # Initialize databases on startup
+    initialize_logging_from_settings()
 
-    await init_postgres_db()
+    # Initialize databases on startup
+    await init_db()
 
     yield
 
