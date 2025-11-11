@@ -9,7 +9,7 @@ from models.postgres_models import Player
 # Create a router for items
 router = APIRouter(
     prefix="/auth",
-    tags=["Game Initialization"],
+    tags=["Authentication"],
 )
 
 
