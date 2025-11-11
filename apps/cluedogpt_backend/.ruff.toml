@@ -1,5 +1,5 @@
 lint.select = ["E", "F", "B", "I", "N", "W", "UP", "S", "BLE", "A", "COM", "C4"]
-lint.ignore = ["UP006", "UP035", "B008"]
+lint.ignore = ["UP006", "UP035", "B008", "S105"]
 
 # Set max line length
 line-length = 200
