@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
+from models.postgres_models import Game
+
 
 @dataclass
-class AgentDepedencies:
-    conversation_id: str
-    user_id: int
+class GameAgentDeps:
+    game: Game
